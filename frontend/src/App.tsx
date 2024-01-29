@@ -7,10 +7,13 @@ function App() {
   
   return (
     <>
-      <Navbar></Navbar>
-      <Hero/>
-      <br/>
-      <Shop/>
+      <Navbar/>
+      <div className='p-10'>
+        <Hero/>
+        <br/>
+        <Shop/>
+      </div>
+      
     </>
   )
 }
