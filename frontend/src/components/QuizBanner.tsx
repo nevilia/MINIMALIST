@@ -3,7 +3,7 @@ function QuizBanner() {
         <div className="my-10">
          
         <div className="relative my-10 md:my-3 bg-gray-200 text-gray-900 px-[100px] py-[70px] flex flex-col items-center " >
-            <h1 className="text-[40px] font-semibold text-center">
+            <h1 className="text-4xl font-semibold text-center">
                 Not sure which are the right products for you? <br/>
                 Try Our Routine Recommender 
             </h1>
