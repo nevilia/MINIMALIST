@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Navbar from './components/Navbar'
 import QuizBanner from './components/QuizBanner'
 import Shop from './components/Shop'
+import Values from './components/Values'
 
 function App() {
   
@@ -17,6 +18,7 @@ function App() {
         </div>
       </div>
       <QuizBanner/>
+      <Values/>
       
     </>
   )
