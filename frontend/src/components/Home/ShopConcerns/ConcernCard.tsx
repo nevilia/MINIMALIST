@@ -1,8 +1,3 @@
-// import acne from '../assets/acne.jpg'
-// import antiaging from '../assets/antiaging.jpg'
-// import brightening from '../assets/brightening.jpg'
-// import pigmentation from '../assets/pigmentation.jpg'
-
 interface ConcernCardProps {
   bgImg: string;
   title: string;

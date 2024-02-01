@@ -1,11 +1,11 @@
 import './App.css'
 import Footer from './components/Footer'
-import Hero from './components/Hero'
+import Hero from './components/Home/Hero/Hero'
 import Navbar from './components/Navbar'
-import QuizBanner from './components/QuizBanner'
-import Reviews from './components/Reviews'
-import Shop from './components/Shop'
-import Values from './components/Values'
+import QuizBanner from './components/Home/Quiz/QuizBanner'
+import Reviews from './components/Home/Reviews/Reviews'
+import Shop from './components/Home/ShopConcerns/Shop'
+import Values from './components/Home/Values/Values'
 
 function App() {
   

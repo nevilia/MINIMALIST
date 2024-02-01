@@ -1,5 +1,5 @@
 import ConcernCarousel from "./ConcernCarousel"
-import bgimage from '../assets/Shop-Option-Background.jpg'
+import bgimage from '../../../assets/Shop-Option-Background.jpg'
 // This part is the Image on background and a Carousel of Products by Concern
 function ShopOptions() {
   return (

@@ -1,8 +1,8 @@
 import ConcernCard from "./ConcernCard"
-import acne from '../assets/acne.jpg';
-import antiaging from '../assets/antiaging.jpg';
-import brightening from '../assets/brightening.jpg';
-// import pigmentation from '../assets/pigmentation.jpg';
+import acne from '../../../assets/acne.jpg';
+import antiaging from '../../../assets/antiaging.jpg';
+import brightening from '../../../assets/brightening.jpg';
+// import pigmentation from '../../../assets/pigmentation.jpg';
 
 // This is the Product Carousel with 4 Cards
 function ConcernCarousel() {
