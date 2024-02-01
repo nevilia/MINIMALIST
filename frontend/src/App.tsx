@@ -1,7 +1,9 @@
 import './App.css'
+import Footer from './components/Footer'
 import Hero from './components/Hero'
 import Navbar from './components/Navbar'
 import QuizBanner from './components/QuizBanner'
+import Reviews from './components/Reviews'
 import Shop from './components/Shop'
 import Values from './components/Values'
 
@@ -19,6 +21,8 @@ function App() {
       </div>
       <QuizBanner/>
       <Values/>
+      <Reviews/>
+      <Footer/>
       
     </>
   )

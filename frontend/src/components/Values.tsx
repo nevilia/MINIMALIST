@@ -1,7 +1,7 @@
 import ValueCard, {Value} from "./ValueCard"
 import Values1Image from '../assets/Values1.jpg';
 import Values2Image from '../assets/Values2.jpg';
-import Values3Image from '../assets/Values3.jpg';
+import Values3Image from '../assets/Values32.jpg';
 
 
 const valuesData: Value[] = [
