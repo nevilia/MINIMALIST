@@ -12,7 +12,6 @@ function ConcernCarousel() {
       <ConcernCard bgImg={antiaging} title="Anti-Aging" />
       <ConcernCard bgImg={brightening} title="Brightening" />
       {/* <ConcernCard bgImg={pigmentation} title="Pigmentation" /> */}
-        {/* <ConcernCard/> */}
     </div>
   )
 }

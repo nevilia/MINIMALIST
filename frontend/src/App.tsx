@@ -4,7 +4,7 @@ import Hero from './components/Home/Hero/Hero'
 import Navbar from './components/Navbar'
 import QuizBanner from './components/Home/Quiz/QuizBanner'
 import Reviews from './components/Home/Reviews/Reviews'
-import Shop from './components/Home/ShopConcerns/Shop'
+import Shop from './components/Home/Concerns/Shop'
 import Values from './components/Home/Values/Values'
 
 function App() {
