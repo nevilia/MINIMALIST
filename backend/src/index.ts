@@ -17,6 +17,7 @@ app.use(cors())
 
 app.use(express.json());
 app.use('/api', productRoutes);
+// app.use('')
 app.use(errorHandler);
 
 app.listen(PORT, () => {
