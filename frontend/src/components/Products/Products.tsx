@@ -14,7 +14,10 @@ function Products() {
   return (
     <div className="m-10">
       <ProductsHeader />
-      <div className="flex flex-wrap m-10">
+      <hr />
+      
+      
+      <div className="flex flex-wrap sm:m-10">
       {products.map((product, index) => (
         <ProductCard
           key={index}
