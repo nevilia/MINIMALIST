@@ -4,10 +4,10 @@ import Product from '../models/productModel';
 const getAllProducts = async (req: Request, res: Response) => {
     try {
         const products = await Product.find()
-        res.json(products)
+        return res.json(products)
     } catch (error) {
         console.error(error)
-        res.status(500).json({ error: 'Internal server Error' })
+        return res.status(500).json({ error: 'Internal server Error' })
     }
 }
 
@@ -16,13 +16,13 @@ const getProductById = async (req: Request, res: Response) => {
     try {
         const product = await Product.findById(productId)
         if (!product) {
-            res.send(404).json({ error: 'Product not found' })
+            return res.status(404).json({ error: 'Product not found' })
         }
-        res.json(product)
+        return res.json(product)
 
     } catch (error) {
         console.error(error)
-        res.status(500).json({ error: 'Internal server Error' })
+        return res.status(500).json({ error: 'Internal server Error' })
     }
 }
 
@@ -32,22 +32,22 @@ const postProduct = async (req: Request, res: Response) => {
     try {
         const existingProduct = await Product.findOne({ name })
         if (existingProduct) {
-            res.status(400).json({ message: 'Product already exixts' })
+            return res.status(400).json({ message: 'Product already exixts' })
         }
         const newProduct = new Product({ name, rating, reviews, price, type, images, coverPhoto })
         await newProduct.save()
 
-        res.status(201).json(newProduct)
+        return res.status(201).json(newProduct)
 
 
     } catch (error) {
         console.error(error)
-        res.status(500).json({ error: 'Internal server Error' })
+        return res.status(500).json({ error: 'Internal server Error' })
     }
 }
 
 const updateProduct = async (req: Request, res: Response) => {
-    const { id } = req.params
+    const { id } = req.params;
     try {
         const existingProduct = await Product.findById(id);
 
@@ -60,12 +60,31 @@ const updateProduct = async (req: Request, res: Response) => {
 
         const updatedProduct = await existingProduct.save();
 
-        res.status(200).json(updatedProduct);
+        return res.status(200).json(updatedProduct);
 
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ error: 'Internal server Error' })
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server Error' });
     }
-}
+};
 
-export { getAllProducts, getProductById, postProduct, updateProduct }
+const deleteProduct = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        await Product.deleteOne({ _id: id });
+        return res.status(200).json({ message: 'Product removed' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server Error' });
+    }
+};
+
+
+
+export { getAllProducts, getProductById, postProduct, updateProduct, deleteProduct }
