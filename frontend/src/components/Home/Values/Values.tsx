@@ -24,7 +24,7 @@ const valuesData: Value[] = [
 
 function Values() {
   return (
-    <div className="pt-[100px] pb-[70px] px-[100px] bg-white text-black ">
+    <div className="pt-[100px] pb-[70px] sm:px-[100px] bg-white text-black ">
         <h1 className="font-bold text-[40px] text-center p-[40px]">Our Values</h1>
         <div className="flex flex-wrap justify-between p-4 ">
         {valuesData.map((value, index) => (
