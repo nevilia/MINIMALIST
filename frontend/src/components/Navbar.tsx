@@ -12,7 +12,7 @@ function Navbar() {
         </div>
         <div className="flex">
           <Link to="/">
-            <img src="https://beminimalist.co/cdn/shop/files/Minimalist-Logo-White_9bfc4a6b-f7ee-4b78-b667-681c345ef1a5_180x.png?v=1643556721" alt="Minimalist Logo" className="w-full min-h-8 sm:ml-8 sm:pl-10 sm:pr-2"/>
+            <img src="https://beminimalist.co/cdn/shop/files/Minimalist-Logo-White_9bfc4a6b-f7ee-4b78-b667-681c345ef1a5_180x.png?v=1643556721" alt="Minimalist Logo" className="w-full min-h-8 sm:ml-8 sm:pl-10 sm:pr-2" />
           </Link>
         </div>
         <div className="flex space-x-2">

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document} from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 interface User extends Document {
     fname: string
@@ -7,7 +7,7 @@ interface User extends Document {
     password: string
 }
 
-const userSchema = new Schema ({
+const userSchema = new Schema({
     fname: {
         type: String,
         required: true
@@ -25,7 +25,7 @@ const userSchema = new Schema ({
         type: String,
         required: true
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 const User = mongoose.model('User', userSchema)
 

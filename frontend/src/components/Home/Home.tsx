@@ -7,17 +7,17 @@ import Reviews from './Reviews/Reviews';
 function Home() {
   return (
     <>
-    <div className='sm:p-10'>
+      <div className='sm:p-10'>
         <div className='grid mb-[200px]'>
-        <Hero/>
-        <br/>
-        <Shop/>
+          <Hero />
+          <br />
+          <Shop />
         </div>
       </div>
-      <QuizBanner/>
-      <Values/>
-      <Reviews/>
-      </>
+      <QuizBanner />
+      <Values />
+      <Reviews />
+    </>
   );
 }
 

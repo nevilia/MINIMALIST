@@ -31,7 +31,7 @@ function Products() {
         width="50"
         color="#A9A9A9"
         ariaLabel="oval-loading"
-        wrapperStyle={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+        wrapperStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         wrapperClass=""
       /> :
         <div className="flex flex-wrap sm:m-10">

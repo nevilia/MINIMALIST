@@ -10,7 +10,4 @@ router.post('/', postProduct)
 router.patch('/:productId', updateProduct)
 router.delete('/:productId', deleteProduct)
 
-
-// Add more routes as needed
-
 export default router;

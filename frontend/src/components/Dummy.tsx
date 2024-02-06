@@ -1,6 +1,6 @@
 type Props = {}
 
-function Dummy({}: Props) {
+function Dummy({ }: Props) {
   return (
     <div className="text-9xl">Dummy</div>
   )
