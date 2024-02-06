@@ -12,10 +12,10 @@ function Navbar() {
         </div>
         <div className="flex">
           <Link to="/">
-            <img src="https://beminimalist.co/cdn/shop/files/Minimalist-Logo-White_9bfc4a6b-f7ee-4b78-b667-681c345ef1a5_180x.png?v=1643556721" alt="Minimalist Logo" />
+            <img src="https://beminimalist.co/cdn/shop/files/Minimalist-Logo-White_9bfc4a6b-f7ee-4b78-b667-681c345ef1a5_180x.png?v=1643556721" alt="Minimalist Logo" className="w-full min-h-8 sm:ml-8 sm:pl-10 sm:pr-2"/>
           </Link>
         </div>
-        <div className="flex space-x-6">
+        <div className="flex space-x-2">
           <a href="#" className="text-white">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />

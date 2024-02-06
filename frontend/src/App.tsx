@@ -4,8 +4,9 @@ import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import Home from './components/Home/Home';
 import Products from './components/Products/Products';
-import Register from './components/Authentication/Register';
+import Register from './components/Account/Register';
 import Dummy from './components/Dummy';
+import Login from './components/Account/Login';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login/>} />
 
 
         <Route path="/dummy" element={<Dummy/>} />
