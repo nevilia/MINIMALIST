@@ -25,7 +25,7 @@ function Register() {
       }
       else {
         const data = await response.json();
-        setError(data.error || 'An error occurred');
+        setError(data.error || 'An error occurred' );
         console.log(error)
       }
     } catch (error) {
@@ -47,6 +47,7 @@ function Register() {
           <input className="py-3 px-5 m-3 border border-gray rounded w-full" type="password" name="Password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <button className="bg-black text-white m-3 w-full px-8 py-3">Create</button>
         </form>
+        {error && <p className="text-red-500">{error}</p>}
         <p className="underline"><Link to="/login">Already registered?</Link></p>
       </div>
     </div>

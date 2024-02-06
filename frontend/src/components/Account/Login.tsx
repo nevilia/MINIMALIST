@@ -22,7 +22,7 @@ function Login() {
             }
             else {
                 const data = await response.json();
-                setError(data.error || 'An error occurred');
+                setError(data.error || 'Wrong Email or Password');
                 console.log(error)
             }
         } catch (error) {
@@ -43,6 +43,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)} />
                 <button type="submit" className="bg-black text-white m-3 w-full px-8 py-3">Sign In</button>            
             </form>
+            {error && <p className="text-red-500">{error}</p>}
             <p className="underline"><Link to="/">Forgot Your Password?</Link></p>
             <p className="underline"><Link to="/register">Create Account</Link></p>
         </div>

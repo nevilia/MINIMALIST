@@ -38,7 +38,7 @@ const addUser = async (req: Request, res: Response) => {
     try {
         const existingUser = await User.findOne({ email })
         if (existingUser) {
-            return res.status(400).json({ messgae: "Email already in use" })
+            return res.status(400).json({ error: "Email already in use" })
         }
         const hashedPassword = await bcrypt.hash(password, 10)
 
