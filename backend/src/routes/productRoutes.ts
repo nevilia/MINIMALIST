@@ -4,11 +4,11 @@ import { deleteProduct, getAllProducts, getProductById, postProduct, updateProdu
 
 const router = express.Router();
 
-router.get('/products', getAllProducts);
-router.get('/products/:productId', getProductById);
-router.post('/products', postProduct)
-router.patch('/products/:id', updateProduct)
-router.delete('/products/:id', deleteProduct)
+router.get('/', getAllProducts);
+router.get('/:productId', getProductById);
+router.post('/', postProduct)
+router.patch('/:productId', updateProduct)
+router.delete('/:productId', deleteProduct)
 
 
 // Add more routes as needed

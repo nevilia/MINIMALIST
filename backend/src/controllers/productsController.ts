@@ -47,9 +47,9 @@ const postProduct = async (req: Request, res: Response) => {
 }
 
 const updateProduct = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { productId } = req.params;
     try {
-        const existingProduct = await Product.findById(id);
+        const existingProduct = await Product.findById(productId);
 
         if (!existingProduct) {
             return res.status(404).json({ message: 'Product not found' });
@@ -69,14 +69,14 @@ const updateProduct = async (req: Request, res: Response) => {
 };
 
 const deleteProduct = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { productId } = req.params;
     try {
-        const product = await Product.findById(id);
+        const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
 
-        await Product.deleteOne({ _id: id });
+        await Product.deleteOne({ _id: productId });
         return res.status(200).json({ message: 'Product removed' });
 
     } catch (error) {

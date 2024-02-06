@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import productRoutes from './routes/productRoutes';
+import userRoutes from './routes/userRoutes'
 import { errorHandler } from './utils/errorHandler';
 import cors from 'cors'
 
@@ -16,8 +17,8 @@ mongoose.connect(process.env.MONGODB_URI || '');
 app.use(cors())
 
 app.use(express.json());
-app.use('/api', productRoutes);
-// app.use('')
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes)
 app.use(errorHandler);
 
 app.listen(PORT, () => {
