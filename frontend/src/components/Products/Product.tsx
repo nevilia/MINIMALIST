@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Rating from '../Rating';
+import Quantity from '../Quantity';
 
 function Product() {
   const { _id } = useParams();
@@ -39,7 +40,7 @@ function Product() {
         <hr className=''></hr>
 
         <h4 className='font-semibold py-5'>Quantity</h4>
-        Counter Box Component 
+        <Quantity/> 
         <br/>
         <div className='py-5 '>
             <button className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
