@@ -35,9 +35,10 @@ function Products() {
         wrapperClass=""
       /> :
         <div className="flex flex-wrap sm:m-10">
-          {products.map((product, index) => (
+          {products.map((product) => (
             <ProductCard
-              key={index}
+              _id={product._id}
+              key={product._id}
               coverPhoto={product.coverPhoto}
               name={product.name}
               rating={product.rating}
