@@ -17,12 +17,12 @@ function Quantity({}: Props) {
         }
     }
   return (
-    <div className='flex items-center font-semibold sm:max-w-[250px] p-3 justify-between border border-gray-300'>
-        <button className='px-5 text-3xl' onClick={handleDecrease}> - </button>
-        <p className='px-10'>
+    <div className='flex items-center font-semibold max-w-[250px] sm:p-3 justify-between border border-gray-300'>
+        <button className='px-2 sm:px-5 text-3xl' onClick={handleDecrease}> - </button>
+        <p className='sm:px-10'>
             {count}
         </p>
-        <button className='px-5 text-3xl ' onClick={handleIncrease}> + </button>
+        <button className='px-2 sm:px-5 text-3xl ' onClick={handleIncrease}> + </button>
     </div>
   )
 }
