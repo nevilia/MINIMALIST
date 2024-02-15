@@ -23,7 +23,7 @@ function Rating({ rating, reviews }: RatingProps) {
     );
 
     return (
-        <div className="flex items-center">
+        <div className="flex items-center py-3">
             {[...Array(filledStars)].map((_, index) => (
                 <React.Fragment key={index}>{filledStarIcon}</React.Fragment>
             ))}
