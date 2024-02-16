@@ -4,36 +4,38 @@ const Cart = require('../models/CartModel');
 
 // Route to create a new cart
 export const createCart = async (req: Request, res: Response) => {
-  try {
-    const newCart = await Cart.create({ items: req.body.items });
-    res.status(201).json(newCart);
-  } catch (error) {
-    console.error('Error creating cart:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
+    try {
+        const { productId, quantity } = req.body;
+        const items = [{ productId, quantity }];
+        const newCart = await Cart.create({ items });
+        res.status(201).json(newCart);
+    } catch (error) {
+        console.error('Error creating cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 };
 
 // Route to get all carts
 export const getAllCarts = async (req: Request, res: Response) => {
-  try {
-    const carts = await Cart.find();
-    res.status(200).json(carts);
-  } catch (error) {
-    console.error('Error fetching carts:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
+    try {
+        const carts = await Cart.find();
+        res.status(200).json(carts);
+    } catch (error) {
+        console.error('Error fetching carts:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 };
 
 export const getCart = async (req: Request, res: Response) => {
     try {
         const { cartId } = req.params;
-      const carts = await Cart.findById(cartId);
-      res.status(200).json(carts);
+        const carts = await Cart.findById(cartId);
+        res.status(200).json(carts);
     } catch (error) {
-      console.error('Error fetching cart:', error);
-      res.status(500).json({ message: 'Internal server error' });
+        console.error('Error fetching cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-  };
+};
 
 // Routes for CRUD on cart
 
@@ -63,38 +65,56 @@ export const addToCart = async (req: Request, res: Response) => {
     }
 };
 
+// Route to update quantity of a product in the cart
+export const updateCartItem = async (req: Request, res: Response) => {
+    try {
+        const { cartId, itemId } = req.params;
+        const { quantity } = req.body;
+        const cart = await Cart.findById(cartId);
 
-// Route to update a cart
-// export const updateCart = async (req: Request, res: Response) => {
-//     try {
-//       const { cartId } = req.params;
-//       const { productId, quantity } = req.body;
-  
-//       // Find the cart by ID
-//       const cart = await Cart.findById(cartId);
-  
-//       if (!cart) {
-//         return res.status(404).json({ message: 'Cart not found' });
-//       }
-  
-//       // Update the quantity of the product in the cart
-//       const item = cart.items.find((item: { productId: string; }) => item.productId === productId);
-//       if (!item) {
-//         return res.status(404).json({ message: 'Product not found in cart' });
-//       }
-//       item.quantity = quantity;
-  
-//       // Save the updated cart
-//       await cart.save();
-  
-//       // Respond with the updated cart
-//       res.json(cart);
-//     } catch (error) {
-//       console.error('Error updating cart:', error);
-//       res.status(500).json({ message: 'Internal server error' });
-//     }
-//   };
-  
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const item = cart.items.find((item: { _id: { toString: () => string; }; }) => item._id.toString() === itemId);
+
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        item.quantity = quantity;
+        await cart.save();
+
+        res.json(cart);
+    } catch (error) {
+        console.error('Error updating item in cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Route to remove a product from the cart
+export const removeProductFromCart = async (req: Request, res: Response) => {
+    try {
+        const { cartId, itemId } = req.params;
+        const cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        // Filter out the item to be deleted
+        cart.items = cart.items.filter((item: { _id: { toString: () => string; }; }) => item._id.toString() !== itemId);
+
+        await cart.save();
+
+        res.json(cart);
+    } catch (error) {
+        console.error('Error removing product from cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
 // Route to delete a product from a cart
 export const deleteFromCart = async (req: Request, res: Response) => {
     try {
@@ -117,4 +137,45 @@ export const deleteFromCart = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getItemFromCart = async (req: Request, res: Response) => {
+    try {
+        const { cartId, itemId } = req.params;
+        const cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const item = cart.items.find((item: { _id: { toString: () => string; }; }) => item._id.toString() === itemId);
+
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        res.json(item);
+    } catch (error) {
+        console.error('Error deleting item from cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Delete Empty Carts
+export const deleteEmptyCarts = async (req: Request, res: Response) => {
+    try {
+      // Find carts with empty items array
+      const emptyCarts = await Cart.find({ items: { $size: 0 } });
   
+      if (emptyCarts.length === 0) {
+        return res.status(404).json({ message: 'No empty carts found' });
+      }
+  
+      // Delete empty carts
+      await Cart.deleteMany({ items: { $size: 0 } });
+  
+      res.status(200).json({ message: 'Empty carts deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting empty carts:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
