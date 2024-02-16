@@ -14,7 +14,7 @@ export const createCart = async (req: Request, res: Response) => {
 };
 
 // Route to get all carts
-export const getCart = async (req: Request, res: Response) => {
+export const getAllCarts = async (req: Request, res: Response) => {
   try {
     const carts = await Cart.find();
     res.status(200).json(carts);
@@ -23,6 +23,17 @@ export const getCart = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getCart = async (req: Request, res: Response) => {
+    try {
+        const { cartId } = req.params;
+      const carts = await Cart.findById(cartId);
+      res.status(200).json(carts);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
 
 // Routes for CRUD on cart
 
@@ -85,29 +96,25 @@ export const addToCart = async (req: Request, res: Response) => {
 //   };
   
 // Route to delete a product from a cart
-// export const deleteFromCart = async (req: Request, res: Response) => {
-//     try {
-//       const { cartId } = req.params;
-//       const { productId } = req.body;
-  
-//       // Find the cart by ID
-//       const cart = await Cart.findById(cartId);
-  
-//       if (!cart) {
-//         return res.status(404).json({ message: 'Cart not found' });
-//       }
-  
-//       // Filter out the product from the cart
-//       cart.items = cart.items.filter((item: { productId: string; }) => item.productId !== productId);
-  
-//       // Save the updated cart
-//       await cart.save();
-  
-//       // Respond with the updated cart
-//       res.json(cart);
-//     } catch (error) {
-//       console.error('Error deleting product from cart:', error);
-//       res.status(500).json({ message: 'Internal server error' });
-//     }
-//   };
+export const deleteFromCart = async (req: Request, res: Response) => {
+    try {
+        const { cartId, itemId } = req.params;
+        const cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        // Filter out the item to be deleted
+        cart.items = cart.items.filter((item: { _id: { toString: () => string; }; }) => item._id.toString() !== itemId);
+
+        await cart.save();
+        console.log('Item successfully deleted');
+
+        res.json(cart);
+    } catch (error) {
+        console.error('Error deleting item from cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
   
