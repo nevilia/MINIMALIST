@@ -12,11 +12,15 @@ function Cart() {
     useEffect(() => {
         const fetchCart = async () => {
             try {
-                const res = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}`)
+                const res = await fetch(`http://localhost:3000/api/cart/${cartId}`)
                 const data = await res.json()
-                const items = await data.items
+                const items: CartItem[] = data.items.map((item: any) => ({
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    itemId: item._id 
+                }));
     
-                setCartItems(items) // Update cartItems first
+                setCartItems(items) 
     
             } catch (error) {
                 console.error('Error fetching cart items:', error);
@@ -32,7 +36,7 @@ function Cart() {
             try {
                 const productDetailsPromises = cartItems.map(async (item: any) => {
                     const productId = item.productId
-                    const productRes = await fetch(`https://minimalist-backend.onrender.com/api/products/${productId}`);
+                    const productRes = await fetch(`http://localhost:3000/api/products/${productId}`);
                     const productData = await productRes.json()
                     return {
                         name: productData.name,
@@ -56,6 +60,35 @@ function Cart() {
     }, [cartItems]);
     
 
+    const cartChange = async (newQuantity: number, itemId: string) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/cart/${cartId}/items/${itemId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update quantity');
+            }
+    
+            // If the update is successful, update the local state
+            const updatedCartItemDetails = cartItems.map(item => {
+                if (item.itemId === itemId) {
+                    return { ...item, quantity: newQuantity };
+                }
+                return item;
+            });
+            setCartItems(updatedCartItemDetails);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+        }
+    };
+    
+    
+
 
     return (
         <div>
@@ -73,6 +106,7 @@ function Cart() {
                     </thead>
                     <tbody className="">
                         {productDetails.map((item, index) => (
+                            
 
                             <tr className="h-[150px] " key={index}>
                                 <td className="flex gap-6 px-4 py-2 text-xl font-semibold">
@@ -81,12 +115,17 @@ function Cart() {
 
                                 </td>
                                 {/* Fix Count. min should be 1 here by default, if 0 then remove */}
-                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={()=>{}} /> </td>
-                                <td className="  px-4 py-2">{item.price}</td>
+                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> </td>
+                                <td className="  px-4 py-2">₹ {item.price}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+            </div>
+            <hr/>
+            <div className="flex flex-col p-10 justify-end">
+                <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ 1000 </p>
+                <button className="flex justify-center p-4 bg-black text-white" type="submit" onSubmit={()=>{console.log('after submit')}}>Proceed To Buy</button>
             </div>
         </div>
     )
