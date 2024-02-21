@@ -6,6 +6,7 @@ import Quantity from '../Quantity';
 function Product() {
   const { _id } = useParams();
   const [product, setProduct] = useState<any>('');
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (_id) {
@@ -21,6 +22,29 @@ function Product() {
   if (!product) {
     return <div>Loading...</div>;
   }
+
+  const addToCart = async () => {
+    try {
+      // Make a POST request to add the product to the cart
+      const response = await fetch(`https://minimalist-backend.onrender.com/api/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          productId: _id,
+          quantity: quantity // Pass the selected quantity to the request body
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add product to cart');
+      }
+      // Handle success response if needed
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // Handle error
+    }
+  };
 
   return (
     <div className='flex flex-wrap sm:m-5 p-8 '>
@@ -40,11 +64,13 @@ function Product() {
         <hr className=''></hr>
 
         <h4 className='font-semibold py-5'>Quantity</h4>
-        <Quantity/> 
+        <Quantity initialValue={quantity} onQuantityChange={setQuantity} /> {/* Pass quantity state and setter function */}
+
+        
         <br/>
         <div className='py-5 '>
-            <button className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
-            <button className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button>
+            <button onClick={addToCart} className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
+            <button onClick={addToCart} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button>
         </div>
       </div>
     </div>

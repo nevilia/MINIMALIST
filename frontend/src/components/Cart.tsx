@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import Quantity from "./Quantity"
 
-type Prod = { name: string; price: number; image: string; }
-
+type Prod = { name: string; price: number; image: string; quantity: number }
+type CartItem = {productId: string; quantity: number; itemId: string}
 
 function Cart() {
-    const [cartItems, setCartItems] = useState([])
+    const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
     const cartId = "65ce4cfd4c6d2b010aa2b0c3" // make it come from url. figure it out
 
@@ -15,9 +15,21 @@ function Cart() {
                 const res = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}`)
                 const data = await res.json()
                 const items = await data.items
-                console.log(items)
-                setCartItems(items)
-
+    
+                setCartItems(items) // Update cartItems first
+    
+            } catch (error) {
+                console.error('Error fetching cart items:', error);
+            }
+        }
+    
+        fetchCart();
+    
+    }, []);
+    
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
                 const productDetailsPromises = cartItems.map(async (item: any) => {
                     const productId = item.productId
                     const productRes = await fetch(`https://minimalist-backend.onrender.com/api/products/${productId}`);
@@ -25,25 +37,24 @@ function Cart() {
                     return {
                         name: productData.name,
                         price: productData.price,
-                        image: productData.coverPhoto
+                        image: productData.coverPhoto,
+                        quantity: item.quantity
                     }
-                })
-                const productDetails = await Promise.all(productDetailsPromises)
-                console.log("Product details:", productDetails)
-                setProductDetails(productDetails)
-
+                });
+    
+                const productDetails = await Promise.all(productDetailsPromises);
+                setProductDetails(productDetails);
             } catch (error) {
                 console.error('Error fetching product details:', error);
             }
-
         }
-
-
-
-
-        fetchCart()
-
-    }, [cartId])
+    
+        if (cartItems.length > 0) {
+            fetchProductDetails(); // Only fetch product details when cartItems change
+        }
+    
+    }, [cartItems]);
+    
 
 
     return (
@@ -70,7 +81,7 @@ function Cart() {
 
                                 </td>
                                 {/* Fix Count. min should be 1 here by default, if 0 then remove */}
-                                <td className="  px-4 py-2"><Quantity /> </td>
+                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={()=>{}} /> </td>
                                 <td className="  px-4 py-2">{item.price}</td>
                             </tr>
                         ))}
