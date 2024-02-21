@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-const Cart = require('../models/CartModel');
+import Cart from '../models/cartModel';
 
 // Route to create a new cart
 export const createCart = async (req: Request, res: Response) => {
@@ -44,10 +44,8 @@ export const addToCart = async (req: Request, res: Response) => {
         const { cartId } = req.params;
         const { productId, quantity } = req.body;
 
-        // Find the cart by ID
         let cart = await Cart.findById(cartId);
 
-        // If cart doesn't exist, create a new one
         if (!cart) {
             cart = await Cart.create({ items: [{ productId, quantity }] });
             return res.status(201).json(cart);
@@ -76,7 +74,7 @@ export const updateCartItem = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Cart not found' });
         }
 
-        const item = cart.items.find((item: { _id: { toString: () => string; }; }) => item._id.toString() === itemId);
+        const item = cart.items.find(item => item._id && item._id.toString() === itemId)
 
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
@@ -93,19 +91,22 @@ export const updateCartItem = async (req: Request, res: Response) => {
 };
 
 // Route to remove a product from the cart
+// Route to remove a product from the cart
+// Route to remove a product from the cart
 export const removeProductFromCart = async (req: Request, res: Response) => {
     try {
         const { cartId, itemId } = req.params;
-        const cart = await Cart.findById(cartId);
+        
+        // Find the cart by its ID and update it to remove the specified item
+        const cart = await Cart.findByIdAndUpdate(
+            cartId,
+            { $pull: { items: { _id: itemId } } },
+            { new: true }
+        );
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
-
-        // Filter out the item to be deleted
-        cart.items = cart.items.filter((item: { _id: { toString: () => string; }; }) => item._id.toString() !== itemId);
-
-        await cart.save();
 
         res.json(cart);
     } catch (error) {
@@ -114,40 +115,17 @@ export const removeProductFromCart = async (req: Request, res: Response) => {
     }
 };
 
-
-// Route to delete a product from a cart
-export const deleteFromCart = async (req: Request, res: Response) => {
-    try {
-        const { cartId, itemId } = req.params;
-        const cart = await Cart.findById(cartId);
-
-        if (!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
-        }
-
-        // Filter out the item to be deleted
-        cart.items = cart.items.filter((item: { _id: { toString: () => string; }; }) => item._id.toString() !== itemId);
-
-        await cart.save();
-        console.log('Item successfully deleted');
-
-        res.json(cart);
-    } catch (error) {
-        console.error('Error deleting item from cart:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
 export const getItemFromCart = async (req: Request, res: Response) => {
     try {
         const { cartId, itemId } = req.params;
+        
         const cart = await Cart.findById(cartId);
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
 
-        const item = cart.items.find((item: { _id: { toString: () => string; }; }) => item._id.toString() === itemId);
+        const item = cart.items.find(item => item._id && item._id.toString() === itemId)
 
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
@@ -155,7 +133,7 @@ export const getItemFromCart = async (req: Request, res: Response) => {
 
         res.json(item);
     } catch (error) {
-        console.error('Error deleting item from cart:', error);
+        console.error('Error fetching item from cart:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
