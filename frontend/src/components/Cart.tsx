@@ -12,7 +12,7 @@ function Cart() {
     useEffect(() => {
         const fetchCart = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/api/cart/${cartId}`)
+                const res = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}`)
                 const data = await res.json()
                 const items: CartItem[] = data.items.map((item: any) => ({
                     productId: item.productId,
@@ -36,7 +36,7 @@ function Cart() {
             try {
                 const productDetailsPromises = cartItems.map(async (item: any) => {
                     const productId = item.productId
-                    const productRes = await fetch(`http://localhost:3000/api/products/${productId}`);
+                    const productRes = await fetch(`https://minimalist-backend.onrender.com/api/products/${productId}`);
                     const productData = await productRes.json()
                     return {
                         name: productData.name,
@@ -62,7 +62,7 @@ function Cart() {
 
     const cartChange = async (newQuantity: number, itemId: string) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/cart/${cartId}/items/${itemId}`, {
+            const response = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}/items/${itemId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
