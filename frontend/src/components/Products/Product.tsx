@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Rating from '../Rating';
 import Quantity from '../Quantity';
+
 
 function Product() {
   const { _id } = useParams();
   const [product, setProduct] = useState<any>('');
   const [quantity, setQuantity] = useState(1);
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (_id) {
@@ -46,6 +49,35 @@ function Product() {
     }
   };
 
+  const buyNow = async () => {
+    try {
+      // Make a POST request to add the product to the cart
+      const response = await fetch(`https://minimalist-backend.onrender.com/api/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          productId: _id,
+          quantity: quantity // Pass the selected quantity to the request body
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add product to cart');
+      }
+
+      const cartDetails = await response.json()
+      const cartId = await cartDetails._id
+      console.log(cartId)
+      
+      return navigate(`/cart/${cartId}`);
+      
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // Handle error
+    }
+  };
+
   return (
     <div className='flex flex-wrap sm:m-5 p-8 '>
       <div className='p-5  sm:w-full md:w-1/2'>
@@ -70,7 +102,8 @@ function Product() {
         <br/>
         <div className='py-5 '>
             <button onClick={addToCart} className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
-            <button onClick={addToCart} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button>
+            
+            <button onClick={buyNow} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button>
         </div>
       </div>
     </div>

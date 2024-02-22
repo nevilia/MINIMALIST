@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import Quantity from "./Quantity"
+import { useParams } from "react-router-dom";
 
 type Prod = { name: string; price: number; image: string; quantity: number }
 type CartItem = {productId: string; quantity: number; itemId: string}
@@ -7,7 +8,8 @@ type CartItem = {productId: string; quantity: number; itemId: string}
 function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
-    const cartId = "65ce4cfd4c6d2b010aa2b0c3" // make it come from url. figure it out
+    // const cartId = "65ce4cfd4c6d2b010aa2b0c3" // make it come from url. figure it out
+    const { cartId } = useParams<{ cartId: string }>()
 
     useEffect(() => {
         const fetchCart = async () => {
