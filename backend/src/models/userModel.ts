@@ -5,6 +5,7 @@ interface User extends Document {
     lname: string
     email: string
     password: string
+    cart: Schema.Types.ObjectId | null
 }
 
 const userSchema = new Schema({
@@ -24,6 +25,11 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    cart: {
+        type: Schema.Types.ObjectId,
+        ref: 'Cart',
+        default: null // Default value is null, indicating no cart associated with the user initially
     }
 }, { timestamps: true })
 
