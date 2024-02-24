@@ -14,6 +14,7 @@ function Login() {
     // function to send token to local storage, will be used from storage in axiosInstance to send userId to header
     const setUserIdInHeaders = () => {
         try {
+            console.log(localStorage.getItem('token'))
             const token = localStorage.getItem('token');
             if (token) {
                 axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -28,26 +29,30 @@ function Login() {
         e.preventDefault()
 
         try{
-            const token = localStorage.getItem('token'); 
-        if (!token) {
-            // Handle case where token is not found
-            console.error('Token not found in localStorage');
-            return;
-        }
+        //     const token = localStorage.getItem('token'); 
+        // if (!token) {
+        //     // Handle case where token is not found
+        //     console.error('Token not found in localStorage');
+        //     return;
+        // }
 
-            const response = await axiosInstance.post('/api/users/login', { email, password }, {
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            });
+            const response = await axiosInstance.post('/api/users/login', { email, password }, 
+            // {
+                // headers: {
+                //     'Authorization': `Bearer ${token}` 
+                // }
+            // }
+            );
     
             // Log the authorization header
-            console.log('Authorization header:', `Bearer ${token}`);
+            // console.log('Authorization header:', `Bearer ${token}`);
 
             if (response.status===200) {
                 const token = response.data.token
                 console.log(token)
                 localStorage.setItem('token', token)
+                console.log(localStorage.getItem('token'))
+
                 setUserIdInHeaders() // set the UserId once login is successfull
                 window.location.href = '/'
             }
