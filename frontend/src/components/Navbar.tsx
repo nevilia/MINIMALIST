@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { getUserIdFromToken} from '../../utils'
 import { useEffect, useState } from 'react';
+import SlideOverContent from './SlideOverContent';
 
 function Navbar() {
-
+  const [isOpen, setIsOpen] = useState(false)
   const [userId, setUserId] = useState<string>('');
 
   // extract the userId from token from Headers by using utils
@@ -15,15 +16,19 @@ function Navbar() {
   }, []); 
 
 console.log("Current user ID:", userId);
+
+const handleButtonClick = () => {
+  setIsOpen(!isOpen);
+};
     
   return (
     <nav className="bg-black p-9">
       <div className="flex items-center justify-between gap-6">
-        <div className="text-white ">
+        <div className="text-white " onClick={handleButtonClick}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
-
+          
         </div>
         <div className="flex">
           <Link to="/">
@@ -49,6 +54,7 @@ console.log("Current user ID:", userId);
           </Link>
         </div>
       </div>
+      {isOpen && <SlideOverContent isOpen={isOpen} onClose={handleButtonClick} />}
 
     </nav>
   )
