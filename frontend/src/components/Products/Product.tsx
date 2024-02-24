@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Rating from '../Rating';
 import Quantity from '../Quantity';
+import axiosInstance from '../../../axiosInstance'
+import { getUserIdFromToken } from '../../../utils';
 
 
 function Product() {
@@ -9,16 +11,33 @@ function Product() {
   const [product, setProduct] = useState<any>('');
   const [quantity, setQuantity] = useState(1);
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
+
+  
+  const [userId, setUserId] = useState<string>('');
+
+  // extract the userId from token from Headers by using utils
+  useEffect(() => {
+    const userIdFromToken = getUserIdFromToken();
+    if (userIdFromToken) {
+      setUserId(userIdFromToken);
+    }
+  }, []); 
+
+console.log("Current user ID:", userId);
 
   useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/products/${_id}`);
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      }
+    };
+
     if (_id) {
-      fetch(`https://minimalist-backend.onrender.com/api/products/${_id}`)
-        .then(response => response.json())
-        .then(data => {
-          setProduct(data)
-        })
-        .catch(error => console.error('Error fetching product details:', error));
+      fetchProduct();
     }
   }, [_id]);
 
@@ -28,55 +47,29 @@ function Product() {
 
   const addToCart = async () => {
     try {
-      // Make a POST request to add the product to the cart
-      const response = await fetch(`https://minimalist-backend.onrender.com/api/cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          productId: _id,
-          quantity: quantity // Pass the selected quantity to the request body
-        })
+      await axiosInstance.post(`/api/cart/${userId}/add`, {
+        productId: _id,
+        quantity: quantity,
       });
-      if (!response.ok) {
-        throw new Error('Failed to add product to cart');
-      }
-      // Handle success response if needed
     } catch (error) {
       console.error('Error adding product to cart:', error);
-      // Handle error
     }
   };
 
-  const buyNow = async () => {
-    try {
-      // Make a POST request to add the product to the cart
-      const response = await fetch(`https://minimalist-backend.onrender.com/api/cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          productId: _id,
-          quantity: quantity // Pass the selected quantity to the request body
-        })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to add product to cart');
-      }
+  // Change this one entirely because no logic is built yet
+  // const buyNow = async () => {
+  //   try {
+  //     const response = await axiosInstance.post('/api/cart', {
+  //       productId: _id,
+  //       quantity: quantity,
+  //     });
+  //     const cartId = response.data._id;
+  //     navigate(`/cart/${cartId}`);
+  //   } catch (error) {
+  //     console.error('Error adding product to cart:', error);
+  //   }
+  // };
 
-      const cartDetails = await response.json()
-      const cartId = await cartDetails._id
-      console.log(cartId)
-      
-      return navigate(`/cart/${cartId}`);
-      
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-      // Handle error
-    }
-  };
 
   return (
     <div className='flex flex-wrap sm:m-5 p-8 '>
@@ -103,7 +96,7 @@ function Product() {
         <div className='py-5 '>
             <button onClick={addToCart} className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
             
-            <button onClick={buyNow} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button>
+            {/* <button onClick={buyNow} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button> */}
         </div>
       </div>
     </div>
