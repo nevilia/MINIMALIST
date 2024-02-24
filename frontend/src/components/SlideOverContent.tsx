@@ -15,7 +15,7 @@ const SlideOverContent: React.FC<Props> = ({ isOpen, onClose }) => {
     return (
         <div className={`slide-over ${isOpen ? 'open' : ''} `}>
             {isOpen && <div className="overlay" onClick={onClose}></div>}
-            <div className="content" onClick={handleClick}>
+            <div className="content w-full sm:w-[48%] " onClick={handleClick}>
                 <div className="text-white text-3xl font-bold p-[15%]">
                     <div className="flex justify-end pb-4">
                         <button onClick={onClose}>

@@ -21,12 +21,9 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 40%; /* Adjust width as needed */
     background-color: #111111;
     border-radius: 0;
     z-index: 100;
-    padding: 16px;
-    font-size: 1.5rem; /* Adjust font size as needed */
 }
 
 .link {
