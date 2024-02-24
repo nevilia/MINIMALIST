@@ -1,10 +1,14 @@
 import express from 'express';
 import { getAllCarts, getCart, addToCart, updateCartItem, removeProductFromCart, deleteCart } from '../controllers/cartControllers';
+import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-// Route to get all carts
+// Route to get all carts. Only for Admin purposes
 router.get('/', getAllCarts);
+
+// Auth Middleware
+router.use(authMiddleware)
 
 // Route to get a specific cart by user ID
 router.get('/:userId', getCart);

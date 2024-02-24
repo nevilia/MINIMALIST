@@ -12,12 +12,11 @@ export const getAllCarts =async (req: Request, res: Response) => {
     }
 }
 
+// userId is now coming in req directly instead of params
 export const getCart =async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
-        const { productId, quantity } = req.body;
 
-        let cart = await Cart.findOne({ user: userId });
+        let cart = await Cart.findOne({ user: req.userId });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user' });
@@ -33,10 +32,9 @@ export const getCart =async (req: Request, res: Response) => {
 
 export const addToCart = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
         const { productId, quantity } = req.body;
 
-        let cart = await Cart.findOne({ user: userId });
+        let cart = await Cart.findOne({ user: req.userId });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user' });
@@ -88,20 +86,16 @@ export const removeProductFromCart = async (req: Request, res: Response) => {
     try {
         const { userId, itemId } = req.params;
 
-        // Find the cart by user ID
         const cart: CartDocument | null = await Cart.findOne({ user: userId });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user' });
         }
 
-        // Remove the item from the items array
         cart.items = cart.items.filter(item => item._id.toString() !== itemId);
 
-        // Save the updated cart
         await cart.save();
 
-        // Respond with the updated cart
         res.json(cart);
     } catch (error) {
         console.error('Error removing product from cart:', error);
@@ -112,8 +106,7 @@ export const removeProductFromCart = async (req: Request, res: Response) => {
 
 export const deleteCart = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
-        const cart = await Cart.findOneAndDelete({ user: userId });
+        const cart = await Cart.findOneAndDelete({ user: req.userId });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found for this user' });

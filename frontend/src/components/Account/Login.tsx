@@ -1,27 +1,58 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import axiosInstance from '../../../axiosInstance'
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const handleSubmit =async (e:any) => {
+    useEffect(() => {
+        setUserIdInHeaders();
+    }, []);
+
+    // function to send token to local storage, will be used from storage in axiosInstance to send userId to header
+    const setUserIdInHeaders = () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                console.log('Token set in headers:', token);
+            }
+        } catch (error) {
+            console.error('Error setting token in headers:', error);
+        }
+    }
+
+    const handleSubmit = async (e:any) => {
         e.preventDefault()
 
         try{
-            const response = await fetch('https://minimalist-backend.onrender.com/api/users/login', {
-                method: 'POST',
+            const token = localStorage.getItem('token'); 
+        if (!token) {
+            // Handle case where token is not found
+            console.error('Token not found in localStorage');
+            return;
+        }
+
+            const response = await axiosInstance.post('/api/users/login', { email, password }, {
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            })
-            if (response.ok) {
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+    
+            // Log the authorization header
+            console.log('Authorization header:', `Bearer ${token}`);
+
+            if (response.status===200) {
+                const token = response.data.token
+                console.log(token)
+                localStorage.setItem('token', token)
+                setUserIdInHeaders() // set the UserId once login is successfull
                 window.location.href = '/'
             }
             else {
-                const data = await response.json();
+                const data = await response.data
                 setError(data.error || 'Wrong Email or Password');
                 console.log(error)
             }
