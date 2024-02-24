@@ -1,18 +1,28 @@
 import express from 'express';
-import { getAllCarts, createCart, addToCart, getCart,  getItemFromCart, removeProductFromCart, updateCartItem, deleteEmptyCarts  } from '../controllers/cartControllers';
+import { getAllCarts, getCart, addToCart, updateCartItem, removeProductFromCart, deleteCart } from '../controllers/cartControllers';
+import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
+// Route to get all carts. Only for Admin purposes
 router.get('/', getAllCarts);
-router.get('/:cartId', getCart);
-router.post('/', createCart);
-router.post('/:cartId', addToCart);
-router.delete('/empty', deleteEmptyCarts)
 
-router.patch('/:cartId/items/:itemId', updateCartItem); // Update quantity of item in cart
-router.delete('/:cartId/items/:itemId', removeProductFromCart); // Remove product from cart
-// router.delete('/:cartId/item/:itemId', deleteFromCart);
-router.get('/:cartId/items/:itemId', getItemFromCart);
+// Auth Middleware
+router.use(authMiddleware)
 
+// Route to get a specific cart by user ID
+router.get('/:userId', getCart);
+
+// Route to add a product to the cart
+router.post('/:userId/add', addToCart);
+
+// Route to update a product in the cart
+router.put('/:userId/items/:itemId', updateCartItem);
+
+// Route to remove a product from the cart
+router.delete('/:userId/items/:itemId', removeProductFromCart);
+
+// Route to delete a cart
+router.delete('/:userId', deleteCart);
 
 export default router;

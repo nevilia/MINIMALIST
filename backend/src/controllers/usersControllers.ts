@@ -3,6 +3,7 @@ import User from '../models/userModel';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
+import Cart from '../models/cartModel';
 // import './env';
 dotenv.config();
 
@@ -45,7 +46,13 @@ const addUser = async (req: Request, res: Response) => {
         const newUser = new User({ fname, lname, email, password: hashedPassword })
         await newUser.save()
 
-        return res.status(200).json({ message: "New User created successfully" })
+        const newCart = new Cart({ user: newUser._id, items: [] });
+        await newCart.save();
+
+        newUser.cart = newCart._id;
+        await newUser.save();
+
+        return res.status(200).json({ message: "New User created successfully", newUser })
 
     } catch (error) {
         return res.status(500).json({ error: 'Internal Server Error' })

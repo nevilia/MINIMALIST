@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Quantity from "./Quantity"
-import { useParams } from "react-router-dom";
+import axiosInstance from "../../axiosInstance"
+import { getUserIdFromToken } from "../../utils"
 
 type Prod = { name: string; price: number; image: string; quantity: number }
 type CartItem = {productId: string; quantity: number; itemId: string}
@@ -8,21 +9,24 @@ type CartItem = {productId: string; quantity: number; itemId: string}
 function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
-    // const cartId = "65ce4cfd4c6d2b010aa2b0c3" // make it come from url. figure it out
-    const { cartId } = useParams<{ cartId: string }>()
+    const [userId, setUserId] = useState<string>('');
 
     useEffect(() => {
         const fetchCart = async () => {
             try {
-                const res = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}`)
-                const data = await res.json()
-                const items: CartItem[] = data.items.map((item: any) => ({
+                // use utils to extract userId from token from headers
+                const userId = getUserIdFromToken()
+                setUserId(userId || '')
+                
+                const res = await axiosInstance.get(`/api/cart/${userId}`)
+                const items = res.data.items || []; 
+                const cartItems: CartItem[] = items.map((item: any) => ({
                     productId: item.productId,
                     quantity: item.quantity,
                     itemId: item._id 
                 }));
     
-                setCartItems(items) 
+                setCartItems(cartItems) 
     
             } catch (error) {
                 console.error('Error fetching cart items:', error);
@@ -38,8 +42,8 @@ function Cart() {
             try {
                 const productDetailsPromises = cartItems.map(async (item: any) => {
                     const productId = item.productId
-                    const productRes = await fetch(`https://minimalist-backend.onrender.com/api/products/${productId}`);
-                    const productData = await productRes.json()
+                    const productRes = await axiosInstance.get(`/api/products/${productId}`)
+                    const productData = await productRes.data
                     return {
                         name: productData.name,
                         price: productData.price,
@@ -64,26 +68,16 @@ function Cart() {
 
     const cartChange = async (newQuantity: number, itemId: string) => {
         try {
-            const response = await fetch(`https://minimalist-backend.onrender.com/api/cart/${cartId}/items/${itemId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ quantity: newQuantity })
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to update quantity');
+            const response = await axiosInstance.put(`/api/cart/${userId}/items/${itemId}`, { quantity: newQuantity });
+            if (response.status === 200) {
+                const updatedCartItemDetails = cartItems.map(item => {
+                    if (item.itemId === itemId) {
+                        return { ...item, quantity: newQuantity };
+                    }
+                    return item;
+                });
+                setCartItems(updatedCartItemDetails);
             }
-    
-            // If the update is successful, update the local state
-            const updatedCartItemDetails = cartItems.map(item => {
-                if (item.itemId === itemId) {
-                    return { ...item, quantity: newQuantity };
-                }
-                return item;
-            });
-            setCartItems(updatedCartItemDetails);
         } catch (error) {
             console.error('Error updating quantity:', error);
         }
