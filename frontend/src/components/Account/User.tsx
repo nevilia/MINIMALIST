@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react'
-import { getUserIdFromToken } from '../../../utils';
 import axiosInstance from "../../../axiosInstance"
+import { useParams } from 'react-router-dom';
 
 type Props = {}
 
 function User({ }: Props) {
   const [userData, setUserData] = useState<any>([])
-  const [userId, setUserId] = useState('')
-
+  const [userContact, setUserContact] = useState<any>([])
+  const [userOrder, setUserOrder] = useState<any>([])
+  const { userId } = useParams()
 
   useEffect(() => {
+
     const fetchUserData = async () => {
-      const userId = getUserIdFromToken()
-      setUserId(userId || '')
 
       const response = await axiosInstance.get(`/api/users/${userId}`)
 
       const data = response.data.user
-      console.log(data)
+
       const userData = {
         fname: data.fname,
         lname: data.lname,
@@ -27,15 +27,65 @@ function User({ }: Props) {
       setUserData(userData)
     }
 
-    fetchUserData()
+    const fetchUserOrder = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/orders/users/${userId}`)
 
+      const data = response.data
+
+      const orderDetails = data.map((item: any) => ({
+        _id: item._id,
+        date: new Date(item.createdAt).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }),
+        fullfillmentStatus: item.fullfillmentStatus || 'Processing',
+        paymentStatus: item.paymentStatus,
+        totalPrice: item.totalPrice || null
+      }))
+
+      // console.log('order Details',orderDetails)
+      setUserOrder(orderDetails)
+      } catch (error) {
+        console.log(error)
+      }
+      
+
+    }
+
+    const fetchUserContact = async () => {
+
+      try {
+        const response = await axiosInstance.get(`/api/contact/${userId}`)
+      const data = response.data
+      // console.log(data)
+
+      const contact = {
+        address: data.address,
+        pincode: data.pincode,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        phoneNo: data.phoneNo
+      }
+
+      setUserContact(contact)
+      } catch (error) {
+        console.log(error)
+      }
+
+      
+    }
+
+    fetchUserData()
+    fetchUserContact()
+    fetchUserOrder()
+
+    console.log(userContact)
 
   }, []);
 
-
-
-  console.log('In User Page', userId)
-  console.log(userData)
 
   return (
     <div className='px-10'>
@@ -51,59 +101,45 @@ function User({ }: Props) {
         </div>
       </div>
 
-
-{/* Make an account details model, refer it to users model, and map address */}
       <div className="">
         <h2 className='text-xl font-bold'>Account Details</h2>
-        <div className='flex flex-col py-3'>
-          <span>
-            {userData.fname} {userData.lname}
-          </span>
-          <span>
-            Address 1
-          </span>
-          <span>
-            Pin Code City State
-          </span>
-          <span>
-            Country
-          </span>
-        </div>
+            <span>
+              {userData.fname} {userData.lname}
+            </span>
+        {userContact ?
+          <div className='flex flex-col py-3'>
+            <span>
+              {userContact.address}
+            </span>
+            <span>
+              {userContact.pincode} {userContact.city} {userContact.state}
+            </span>
+            <span>
+              {userContact.country}
+            </span>
+          </div> 
+          :
+          <span>Add your Details</span>
+          // add a form component, common to this page and to checkout page
+        }
+
       </div>
 
-{/* make another table with these info and render via map */}
+      {/* add a order detail page from clicking the number */}
       <div className="orders py-5">
-        <div className='flex flex-col py-3'>
-          <span>
-            Date: 23 Jan, 2024
-          </span>
-          <span>
-            Payment Status: Paid
-          </span>
-          <span>
-            Fulfillment Status: Fulfilled
-          </span>
-          <span>
-            Total: Rs 1093
-          </span>
-        </div>
-        <hr />
-        <div className='flex flex-col py-3'>
-          <span>
-            Date: 2 Jan, 2024
-          </span>
-          <span>
-            Payment Status: Paid
-          </span>
-          <span>
-            Fulfillment Status: Fulfilled
-          </span>
-          <span>
-            Total: Rs 990
-          </span>
-        </div>
-
+        {userOrder.map((order: any, index: number) => (
+          <div key={order._id || index} className='flex flex-col py-3'>
+            <span className='pb-2'><b>Order number</b> : {order._id}</span>
+            <span><b>Date</b>: {order.date}</span>
+            <span><b>Payment Status</b>: {order.paymentStatus}</span>
+            <span><b>Fulfillment Status</b>: {order.fullfillmentStatus}</span>
+            <span><b>Total</b>: Rs {order.totalPrice}</span>
+            <br />
+            <hr />
+          </div>
+        ))}
       </div>
+
 
     </div>
   )

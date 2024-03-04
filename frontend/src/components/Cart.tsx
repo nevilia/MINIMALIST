@@ -10,6 +10,7 @@ function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
     const [userId, setUserId] = useState<string>('');
+    const [cartId, setCartId] = useState<string>('');
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -19,6 +20,8 @@ function Cart() {
                 setUserId(userId || '')
                 
                 const res = await axiosInstance.get(`/api/cart/${userId}`)
+                console.log(res.data._id)
+                setCartId(res.data._id)
                 const items = res.data.items || []; 
                 const cartItems: CartItem[] = items.map((item: any) => ({
                     productId: item.productId,
@@ -83,7 +86,18 @@ function Cart() {
         }
     };
     
-    
+    const createOrder = async () => {
+        try {
+            const response = await axiosInstance.post(`api/orders/${userId}`, {
+                cartId: cartId,
+                totalPrice: 1234,
+                paymentStatus: 'Paid'
+            })
+            console.log('Order Created', response.data)
+        } catch (error) {
+            console.error('Error creating order', error)
+        }
+    }
 
 
     return (
@@ -121,7 +135,7 @@ function Cart() {
             <hr/>
             <div className="flex flex-col p-10 justify-end">
                 <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ 1000 </p>
-                <button className="flex justify-center p-4 bg-black text-white" type="submit" onSubmit={()=>{console.log('after submit')}}>Proceed To Buy</button>
+                <button className="flex justify-center p-4 bg-black text-white" type="button" onClick={createOrder}>Proceed To Buy</button>
             </div>
         </div>
     )
