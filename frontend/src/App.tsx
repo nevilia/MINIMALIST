@@ -10,6 +10,7 @@ import Login from './components/Account/Login';
 import Product from './components/Products/Product';
 import Cart from './components/Cart';
 import User from './components/Account/User';
+import Details from './components/Account/Details';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/user/:userId" element={<User />} />
+        <Route path="/user/:userId/details" element={<Details />} />
         <Route path="/products/:_id" element={<Product />} />
 
 

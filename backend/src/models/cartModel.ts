@@ -1,12 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export interface CartItem {
+  quantity?: number;
+  productId?: mongoose.Types.ObjectId | null | undefined;
+  _id: Schema.Types.ObjectId;
+}
+
 export interface CartDocument extends Document {
   user: mongoose.Types.ObjectId;
-  items: {
-    quantity: number;
-    productId?: mongoose.Types.ObjectId | null | undefined;
-    _id: Schema.Types.ObjectId
-}[];
+  items: CartItem[];
 }
 
 

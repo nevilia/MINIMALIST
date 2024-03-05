@@ -6,6 +6,7 @@ interface User extends Document {
     email: string
     password: string
     cart: Schema.Types.ObjectId | null
+    orders: Schema.Types.ObjectId[]
 }
 
 const userSchema = new Schema({
@@ -30,7 +31,11 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Cart',
         default: null // Default value is null, indicating no cart associated with the user initially
-    }
+    },
+    orders: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Order'
+    }]
 }, { timestamps: true })
 
 const User = mongoose.model('User', userSchema)

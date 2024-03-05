@@ -3,13 +3,16 @@ import Quantity from "./Quantity"
 import axiosInstance from "../../axiosInstance"
 import { getUserIdFromToken } from "../../utils"
 
-type Prod = { name: string; price: number; image: string; quantity: number }
+type Prod = { productId: string; name: string; price: number; image: string; quantity: number }
 type CartItem = {productId: string; quantity: number; itemId: string}
 
 function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
     const [userId, setUserId] = useState<string>('');
+    const [cartId, setCartId] = useState<string>('');
+    const [isCartEmpty, setIsCartEmpty] = useState<boolean>(false);
+    const [totalSum, setTotalSum] = useState<number>(0);
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -19,6 +22,8 @@ function Cart() {
                 setUserId(userId || '')
                 
                 const res = await axiosInstance.get(`/api/cart/${userId}`)
+                console.log(res.data._id)
+                setCartId(res.data._id)
                 const items = res.data.items || []; 
                 const cartItems: CartItem[] = items.map((item: any) => ({
                     productId: item.productId,
@@ -27,7 +32,9 @@ function Cart() {
                 }));
     
                 setCartItems(cartItems) 
-    
+                setIsCartEmpty(cartItems.length === 0);
+
+                
             } catch (error) {
                 console.error('Error fetching cart items:', error);
             }
@@ -35,7 +42,19 @@ function Cart() {
     
         fetchCart();
     
-    }, []);
+    }, [isCartEmpty]);
+
+    useEffect(() => {
+        let sum = 0
+                cartItems.forEach((item:any) => {
+                    const product = productDetails.find((prod) => prod.productId === item.productId)
+                    if(product){
+                        sum += product.price * item.quantity
+                    }
+                    setTotalSum(sum);
+                })
+    
+    }, [cartItems, productDetails])
     
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -45,6 +64,7 @@ function Cart() {
                     const productRes = await axiosInstance.get(`/api/products/${productId}`)
                     const productData = await productRes.data
                     return {
+                        productId: productId,
                         name: productData.name,
                         price: productData.price,
                         image: productData.coverPhoto,
@@ -83,6 +103,34 @@ function Cart() {
         }
     };
     
+    const onClickHandle = async () => {
+        try {
+            // Create the order
+            const orderResponse = await axiosInstance.post(`api/orders/${userId}`, {
+                cartId: cartId,
+                totalPrice: totalSum,
+                paymentStatus: 'Paid'
+            });
+            console.log('Order Created', orderResponse.data);
+    
+            // If order creation was successful, clear the cart
+                const authToken = localStorage.getItem('token');
+                const clearCartResponse = await axiosInstance.delete(`/api/cart/${userId}/clear`, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                });
+                console.log('Cart Cleared', clearCartResponse.data);
+                // After clearing the cart, you may want to update the cartItems state accordingly
+                setCartItems([]);
+                setIsCartEmpty(true);
+
+                window.location.href = `/user/${userId}`
+            
+        } catch (error) {
+            console.error('Error creating order or clearing cart:', error);
+        }
+    };
     
 
 
@@ -110,7 +158,6 @@ function Cart() {
                                     <span className="pt-3">{item.name}</span>
 
                                 </td>
-                                {/* Fix Count. min should be 1 here by default, if 0 then remove */}
                                 <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> </td>
                                 <td className="  px-4 py-2">₹ {item.price}</td>
                             </tr>
@@ -120,8 +167,8 @@ function Cart() {
             </div>
             <hr/>
             <div className="flex flex-col p-10 justify-end">
-                <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ 1000 </p>
-                <button className="flex justify-center p-4 bg-black text-white" type="submit" onSubmit={()=>{console.log('after submit')}}>Proceed To Buy</button>
+                <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ {totalSum} </p>
+                <button className="flex justify-center p-4 bg-black text-white" type="button" onClick={onClickHandle}>Proceed To Buy</button>
             </div>
         </div>
     )

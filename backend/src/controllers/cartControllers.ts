@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Cart, { CartDocument } from '../models/cartModel';
+import Cart, { CartDocument, CartItem } from '../models/cartModel';
 
 export const getAllCarts =async (req: Request, res: Response) => {
     try {
@@ -115,6 +115,26 @@ export const deleteCart = async (req: Request, res: Response) => {
         res.json({ message: 'Cart deleted successfully' });
     } catch (error) {
         console.error('Error deleting user cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const clearCart = async (req: Request, res: Response) => {
+    try {
+        const cart = await Cart.findOne({ user: req.userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found for this user' });
+        }
+
+        while (cart.items.length > 0) {
+            cart.items.pop();
+        }
+
+        await cart.save();
+        res.json({ message: 'Cart cleared successfully' });
+    } catch (error) {
+        console.error('Error clearing user cart:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };

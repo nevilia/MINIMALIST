@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllCarts, getCart, addToCart, updateCartItem, removeProductFromCart, deleteCart } from '../controllers/cartControllers';
+import { getAllCarts, getCart, addToCart, updateCartItem, removeProductFromCart, deleteCart, clearCart } from '../controllers/cartControllers';
 import authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -24,5 +24,7 @@ router.delete('/:userId/items/:itemId', removeProductFromCart);
 
 // Route to delete a cart
 router.delete('/:userId', deleteCart);
+
+router.delete('/:userId/clear', clearCart);
 
 export default router;

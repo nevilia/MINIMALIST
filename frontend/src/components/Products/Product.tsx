@@ -4,15 +4,13 @@ import Rating from '../Rating';
 import Quantity from '../Quantity';
 import axiosInstance from '../../../axiosInstance'
 import { getUserIdFromToken } from '../../../utils';
+import { Oval } from 'react-loader-spinner';
 
 
 function Product() {
   const { _id } = useParams();
   const [product, setProduct] = useState<any>('');
   const [quantity, setQuantity] = useState(1);
-
-  // const navigate = useNavigate()
-
   
   const [userId, setUserId] = useState<string>('');
 
@@ -24,7 +22,7 @@ function Product() {
     }
   }, []); 
 
-console.log("Current user ID:", userId);
+// console.log("Current user ID:", userId);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -42,34 +40,56 @@ console.log("Current user ID:", userId);
   }, [_id]);
 
   if (!product) {
-    return <div>Loading...</div>;
+    return <div><Oval
+    visible={true}
+    height="50"
+    width="50"
+    color="#A9A9A9"
+    ariaLabel="oval-loading"
+    wrapperStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+    wrapperClass=""
+  /></div>;
   }
 
   const addToCart = async () => {
     try {
-      await axiosInstance.post(`/api/cart/${userId}/add`, {
-        productId: _id,
-        quantity: quantity,
-      });
+      // Check if the product is already in the cart
+      const cartResponse = await axiosInstance.get(`/api/cart/${userId}`);
+      const cart = cartResponse.data;
+  
+      // Find the index of the product in the cart
+      const itemIndex = cart.items.findIndex((item:any) => item.productId === _id);
+  
+      // Calculate the total quantity of the product in the cart
+      let totalQuantity = quantity;
+      if (itemIndex !== -1) {
+          totalQuantity += cart.items[itemIndex].quantity;
+      }
+
+      // Check if the total quantity exceeds 5
+      if (totalQuantity > 5) {
+          alert('Not more than 5 allowed');
+          return;
+      }
+      
+      if (itemIndex !== -1) {
+        // If the product is already in the cart, update the quantity
+        const updatedQuantity = cart.items[itemIndex].quantity + quantity;
+        await axiosInstance.put(`/api/cart/${userId}/items/${cart.items[itemIndex]._id}`, {
+          quantity: updatedQuantity,
+        });
+      } else {
+        // If the product is not in the cart, add it
+        await axiosInstance.post(`/api/cart/${userId}/add`, {
+          productId: _id,
+          quantity: quantity,
+        });
+      }
     } catch (error) {
       console.error('Error adding product to cart:', error);
     }
   };
-
-  // Change this one entirely because no logic is built yet
-  // const buyNow = async () => {
-  //   try {
-  //     const response = await axiosInstance.post('/api/cart', {
-  //       productId: _id,
-  //       quantity: quantity,
-  //     });
-  //     const cartId = response.data._id;
-  //     navigate(`/cart/${cartId}`);
-  //   } catch (error) {
-  //     console.error('Error adding product to cart:', error);
-  //   }
-  // };
-
+  
 
   return (
     <div className='flex flex-wrap sm:m-5 p-8 '>
@@ -96,7 +116,6 @@ console.log("Current user ID:", userId);
         <div className='py-5 '>
             <button onClick={addToCart} className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
             
-            {/* <button onClick={buyNow} className='w-full bg-black text-white font-semibold text-xl font-semibold p-5 my-4'>Buy It Now</button> */}
         </div>
       </div>
     </div>
