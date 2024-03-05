@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axiosInstance from "../../../axiosInstance"
+import axiosInstance, {logout} from "../../../axiosInstance"
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
@@ -85,7 +85,7 @@ function User({ }: Props) {
 
     console.log(userContact)
 
-  }, []);
+  }, [userId]);
 
 
   return (
@@ -96,7 +96,7 @@ function User({ }: Props) {
         </div>
         <div className=' flex py-5 '>
           <h3>
-            Welcome Back, {userData.fname}! <Link to="/login" className='underline italic'>Log Out</Link>
+            Welcome Back, {userData.fname}! <Link to="/login" onClick={logout} className='underline italic'>Log Out</Link>
           </h3>
 
         </div>

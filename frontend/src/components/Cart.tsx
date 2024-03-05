@@ -22,7 +22,7 @@ function Cart() {
                 setUserId(userId || '')
                 
                 const res = await axiosInstance.get(`/api/cart/${userId}`)
-                console.log(res.data._id)
+                // console.log(res.data._id)
                 setCartId(res.data._id)
                 const items = res.data.items || []; 
                 const cartItems: CartItem[] = items.map((item: any) => ({
