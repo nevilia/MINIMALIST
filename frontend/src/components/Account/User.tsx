@@ -96,7 +96,7 @@ function User({ }: Props) {
         </div>
         <div className=' flex py-5 '>
           <h3>
-            Welcome Back, {userData.fname}! <a href="" className='underline italic'>Log Out</a>
+            Welcome Back, {userData.fname}! <Link to="/login" className='underline italic'>Log Out</Link>
           </h3>
 
         </div>

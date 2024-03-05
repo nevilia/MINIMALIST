@@ -11,6 +11,7 @@ function Cart() {
     const [productDetails, setProductDetails] = useState<Prod[]>([]);
     const [userId, setUserId] = useState<string>('');
     const [cartId, setCartId] = useState<string>('');
+    const [isCartEmpty, setIsCartEmpty] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -30,6 +31,7 @@ function Cart() {
                 }));
     
                 setCartItems(cartItems) 
+                setIsCartEmpty(cartItems.length === 0);
     
             } catch (error) {
                 console.error('Error fetching cart items:', error);
@@ -38,7 +40,7 @@ function Cart() {
     
         fetchCart();
     
-    }, []);
+    }, [isCartEmpty]);
     
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -86,18 +88,35 @@ function Cart() {
         }
     };
     
-    const createOrder = async () => {
+    const onClickHandle = async () => {
         try {
-            const response = await axiosInstance.post(`api/orders/${userId}`, {
+            // Create the order
+            const orderResponse = await axiosInstance.post(`api/orders/${userId}`, {
                 cartId: cartId,
                 totalPrice: 1234,
                 paymentStatus: 'Paid'
-            })
-            console.log('Order Created', response.data)
+            });
+            console.log('Order Created', orderResponse.data);
+    
+            // If order creation was successful, clear the cart
+                const authToken = localStorage.getItem('token');
+                const clearCartResponse = await axiosInstance.delete(`/api/cart/${userId}/clear`, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                });
+                console.log('Cart Cleared', clearCartResponse.data);
+                // After clearing the cart, you may want to update the cartItems state accordingly
+                setCartItems([]);
+                setIsCartEmpty(true);
+
+                window.location.href = `/user/${userId}`
+            
         } catch (error) {
-            console.error('Error creating order', error)
+            console.error('Error creating order or clearing cart:', error);
         }
-    }
+    };
+    
 
 
     return (
@@ -135,7 +154,7 @@ function Cart() {
             <hr/>
             <div className="flex flex-col p-10 justify-end">
                 <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ 1000 </p>
-                <button className="flex justify-center p-4 bg-black text-white" type="button" onClick={createOrder}>Proceed To Buy</button>
+                <button className="flex justify-center p-4 bg-black text-white" type="button" onClick={onClickHandle}>Proceed To Buy</button>
             </div>
         </div>
     )
