@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ProductsHeader from "./ProductsHeader"
 import ProductCard, { Props } from "./ProductCard"
 import { Oval } from 'react-loader-spinner'
+import axiosInstance from '../../../axiosInstance'
 
 function Products() {
   const [products, setProducts] = useState<Props[]>([])
@@ -9,16 +10,19 @@ function Products() {
 
   useEffect(() => {
     setLoading(true)
-    fetch('https://minimalist-backend.onrender.com/api/products')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error(err)
-        setLoading(false)
-      })
+    const fetchProducts = async () => {
+      try {
+        const res = await axiosInstance.get('/api/products');
+        setProducts(res.data);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    }
+
+
+    fetchProducts()
   }, [])
   return (
     <div className="m-10">
