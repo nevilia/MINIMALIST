@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axiosInstance from "../../../axiosInstance"
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 type Props = {}
 
@@ -106,7 +107,8 @@ function User({ }: Props) {
             <span>
               {userData.fname} {userData.lname}
             </span>
-        {userContact ?
+            <br />
+        {userContact.length!==0 ?
           <div className='flex flex-col py-3'>
             <span>
               {userContact.address}
@@ -119,7 +121,7 @@ function User({ }: Props) {
             </span>
           </div> 
           :
-          <span>Add your Details</span>
+          <Link to={`/user/${userId}/details`} className='cursor-pointer underline'>Add your Details</Link>
           // add a form component, common to this page and to checkout page
         }
 
