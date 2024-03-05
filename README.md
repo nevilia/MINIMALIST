@@ -1,10 +1,19 @@
 Its Under Development
 
 Clone of beminimalist.co
+Visit: https://minimalist-frontend.onrender.com/
 
-Currently only /products and /register pages are working, no links, no buttons
+A lot of features added:
+  User creation + login
+  User cart + orders
+  Dynamically and logically handled changes in cart, and orders
+  Added Contact info for users
 
 Next updates: 
-- working buttons and links
-- fixing mobile view of /products
-- adding login signup
+  Minor detail fixes
+  Some protected routes
+  Another productDetails model 
+  More products to add
+  Other non essential static informational pages
+  Search and filter
+  Payment integeration
