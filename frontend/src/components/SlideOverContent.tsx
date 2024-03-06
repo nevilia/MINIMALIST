@@ -3,10 +3,11 @@ import React from 'react';
 
 type Props = {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
+    userId: string | null
 }
 
-const SlideOverContent: React.FC<Props> = ({ isOpen, onClose }) => {
+const SlideOverContent: React.FC<Props> = ({ isOpen, onClose, userId }) => {
     const handleClick = (e: React.MouseEvent<HTMLDivElement | HTMLAnchorElement>) => {
         e.stopPropagation();
         onClose(); // Close the slide-over when anything inside it is clicked
@@ -29,8 +30,11 @@ const SlideOverContent: React.FC<Props> = ({ isOpen, onClose }) => {
                         <li className='py-3'><Link to="/products" className="link">SHOP</Link></li>
                         <li className='py-3'><Link to="/dummy" className="link">KNOWLEDGE</Link></li>
                         <li className='py-3'><Link to="/" className="link">DOWNLOAD APP</Link></li>
-                        <li className='py-3 font-normal'><Link to="/register" className="link">Register</Link> / <Link to="/login" className="link">Login</Link></li>
-                    </ul>
+                        {userId ? (
+                            <li className='py-3'><Link to={`/user/${userId}`} className="link">My Account</Link></li>
+                        ) : (
+                            <li className='py-3 font-normal'><Link to="/register" className="link">Register</Link> / <Link to="/login" className="link">Login</Link></li>
+                        )}                    </ul>
                 </div>
             </div>
         </div>

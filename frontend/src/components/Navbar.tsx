@@ -64,7 +64,7 @@ const toggleSearch = () => {
           </Link>
         </div>
       </div>
-      {isOpen && <SlideOverContent isOpen={isOpen} onClose={handleButtonClick} />}
+      {isOpen && <SlideOverContent isOpen={isOpen} onClose={handleButtonClick} userId={userId} />}
 
     </nav>
   )
