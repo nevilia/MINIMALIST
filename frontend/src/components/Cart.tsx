@@ -90,18 +90,38 @@ function Cart() {
         try {
             const response = await axiosInstance.put(`/api/cart/${userId}/items/${itemId}`, { quantity: newQuantity });
             if (response.status === 200) {
-                const updatedCartItemDetails = cartItems.map(item => {
-                    if (item.itemId === itemId) {
-                        return { ...item, quantity: newQuantity };
-                    }
-                    return item;
-                });
-                setCartItems(updatedCartItemDetails);
-            }
+                if (newQuantity === 0) {
+                        removeItem(itemId);
+                } else {
+                    const updatedCartItemDetails = cartItems.map(item => {
+                        if (item.itemId === itemId) {
+                            return { ...item, quantity: newQuantity };
+                        }
+                        return item;
+                    });
+                    setCartItems(updatedCartItemDetails);
+                }
+            } 
         } catch (error) {
             console.error('Error updating quantity:', error);
         }
     };
+
+    // Bug: if there's a single item in cart and remove or quantity is made 0, there's no render in the cart and hence it is still visible. but in the backend calls are being made correctly
+    const removeItem = async (itemId: string) => {
+        try {
+            const response = await axiosInstance.delete(`/api/cart/${userId}/items/${itemId}`)
+            if (response.status === 200) {
+                const updatedCartItems = cartItems.filter(item => item.itemId !== itemId);
+                setCartItems(updatedCartItems);
+                // console.log(isCartEmpty)
+                setIsCartEmpty(updatedCartItems.length === 0);
+                // console.log(isCartEmpty)
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+        }
+    }
     
     const onClickHandle = async () => {
         try {
@@ -158,7 +178,7 @@ function Cart() {
                                     <span className="pt-3">{item.name}</span>
 
                                 </td>
-                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> </td>
+                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> <a className='underline px-[40%]' onClick={() => removeItem(cartItems[index].itemId)}>Remove</a> </td>
                                 <td className="  px-4 py-2">₹ {item.price}</td>
                             </tr>
                         ))}
