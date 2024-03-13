@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import React from 'react';
+import { logout } from '../../axiosInstance';
 
 type Props = {
     isOpen: boolean,
@@ -29,12 +30,15 @@ const SlideOverContent: React.FC<Props> = ({ isOpen, onClose, userId }) => {
                         <li className='py-3'><Link to="/" className="link">HOME</Link></li>
                         <li className='py-3'><Link to="/products" className="link">SHOP</Link></li>
                         <li className='py-3'><Link to="/dummy" className="link">KNOWLEDGE</Link></li>
-                        <li className='py-3'><Link to="/" className="link">DOWNLOAD APP</Link></li>
                         {userId ? (
                             <li className='py-3'><Link to={`/user/${userId}`} className="link">My Account</Link></li>
                         ) : (
                             <li className='py-3 font-normal'><Link to="/register" className="link">Register</Link> / <Link to="/login" className="link">Login</Link></li>
-                        )}                    </ul>
+                        )}         
+                        {userId && 
+                            <li><Link to="/login" onClick={logout} className='underline italic'>Log Out</Link></li>           
+                        }
+                    </ul>
                 </div>
             </div>
         </div>
