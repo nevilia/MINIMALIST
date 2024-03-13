@@ -173,12 +173,14 @@ function Cart() {
                             
 
                             <tr className="h-[150px] " key={index}>
-                                <td className="flex gap-6 px-4 py-2 text-xl font-semibold">
+                                <td className="flex gap-6 px-4 py-2 text-base sm:text-xl font-semibold">
                                     <img className="max-h-[150px] max-w-[120px] " src={item.image} alt="" />
                                     <span className="pt-3">{item.name}</span>
 
                                 </td>
-                                <td className="  px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> <a className='underline px-[40%]' onClick={() => removeItem(cartItems[index].itemId)}>Remove</a> </td>
+                                <td className=" text-center px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> 
+                                    <a className='underline' onClick={() => removeItem(cartItems[index].itemId)}>Remove</a> 
+                                </td>
                                 <td className="  px-4 py-2">₹ {item.price}</td>
                             </tr>
                         ))}

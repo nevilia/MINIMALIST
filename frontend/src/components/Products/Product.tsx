@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Rating from '../Rating';
 import Quantity from '../Quantity';
 import axiosInstance from '../../../axiosInstance'
@@ -13,6 +13,14 @@ function Product() {
   const [quantity, setQuantity] = useState(1);
   
   const [userId, setUserId] = useState<string>('');
+  const [itemAdded, setItemAdded] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleGoToCart = () => {
+    navigate(`/cart/${userId}`);
+  };
+
 
   // extract the userId from token from Headers by using utils
   useEffect(() => {
@@ -85,6 +93,8 @@ function Product() {
           quantity: quantity,
         });
       }
+
+      setItemAdded(true);
     } catch (error) {
       console.error('Error adding product to cart:', error);
     }
@@ -114,8 +124,9 @@ function Product() {
         
         <br/>
         <div className='py-5 '>
+          {itemAdded && <p className="text-green-500">Item added to cart</p>}
             <button onClick={addToCart} className='w-full border border-gray-400 text-xl font-semibold p-5 my-4'>Add to Cart</button>
-            
+            <button onClick={handleGoToCart} className='w-full border border-gray-400 text-xl bg-black text-white font-semibold p-5 my-4'>Go to Cart</button>
         </div>
       </div>
     </div>
