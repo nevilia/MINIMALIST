@@ -2,9 +2,10 @@ import { useEffect, useState } from "react"
 import Quantity from "./Quantity"
 import axiosInstance from "../../axiosInstance"
 import { getUserIdFromToken } from "../../utils"
+import emptyCart from "../assets/emptyCart.png"
 
 type Prod = { productId: string; name: string; price: number; image: string; quantity: number }
-type CartItem = {productId: string; quantity: number; itemId: string}
+type CartItem = { productId: string; quantity: number; itemId: string }
 
 function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -20,42 +21,42 @@ function Cart() {
                 // use utils to extract userId from token from headers
                 const userId = getUserIdFromToken()
                 setUserId(userId || '')
-                
+
                 const res = await axiosInstance.get(`/api/cart/${userId}`)
                 // console.log(res.data._id)
                 setCartId(res.data._id)
-                const items = res.data.items || []; 
+                const items = res.data.items || [];
                 const cartItems: CartItem[] = items.map((item: any) => ({
                     productId: item.productId,
                     quantity: item.quantity,
-                    itemId: item._id 
+                    itemId: item._id
                 }));
-    
-                setCartItems(cartItems) 
+
+                setCartItems(cartItems)
                 setIsCartEmpty(cartItems.length === 0);
 
-                
+
             } catch (error) {
                 console.error('Error fetching cart items:', error);
             }
         }
-    
+
         fetchCart();
-    
+
     }, [isCartEmpty]);
 
     useEffect(() => {
         let sum = 0
-                cartItems.forEach((item:any) => {
-                    const product = productDetails.find((prod) => prod.productId === item.productId)
-                    if(product){
-                        sum += product.price * item.quantity
-                    }
-                    setTotalSum(sum);
-                })
-    
+        cartItems.forEach((item: any) => {
+            const product = productDetails.find((prod) => prod.productId === item.productId)
+            if (product) {
+                sum += product.price * item.quantity
+            }
+        })
+        setTotalSum(sum);
+
     }, [cartItems, productDetails])
-    
+
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
@@ -71,27 +72,27 @@ function Cart() {
                         quantity: item.quantity
                     }
                 });
-    
+
                 const productDetails = await Promise.all(productDetailsPromises);
                 setProductDetails(productDetails);
             } catch (error) {
                 console.error('Error fetching product details:', error);
             }
         }
-    
+
         if (cartItems.length > 0) {
             fetchProductDetails(); // Only fetch product details when cartItems change
         }
-    
+
     }, [cartItems]);
-    
+
 
     const cartChange = async (newQuantity: number, itemId: string) => {
         try {
             const response = await axiosInstance.put(`/api/cart/${userId}/items/${itemId}`, { quantity: newQuantity });
             if (response.status === 200) {
                 if (newQuantity === 0) {
-                        removeItem(itemId);
+                    removeItem(itemId);
                 } else {
                     const updatedCartItemDetails = cartItems.map(item => {
                         if (item.itemId === itemId) {
@@ -101,7 +102,7 @@ function Cart() {
                     });
                     setCartItems(updatedCartItemDetails);
                 }
-            } 
+            }
         } catch (error) {
             console.error('Error updating quantity:', error);
         }
@@ -122,7 +123,7 @@ function Cart() {
             console.error('Error removing item:', error);
         }
     }
-    
+
     const onClickHandle = async () => {
         try {
             // Create the order
@@ -132,65 +133,73 @@ function Cart() {
                 paymentStatus: 'Paid'
             });
             console.log('Order Created', orderResponse.data);
-    
-            // If order creation was successful, clear the cart
-                const authToken = localStorage.getItem('token');
-                const clearCartResponse = await axiosInstance.delete(`/api/cart/${userId}/clear`, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`
-                    }
-                });
-                console.log('Cart Cleared', clearCartResponse.data);
-                // After clearing the cart, you may want to update the cartItems state accordingly
-                setCartItems([]);
-                setIsCartEmpty(true);
 
-                window.location.href = `/user/${userId}`
-            
+            // If order creation was successful, clear the cart
+            const authToken = localStorage.getItem('token');
+            const clearCartResponse = await axiosInstance.delete(`/api/cart/${userId}/clear`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            console.log('Cart Cleared', clearCartResponse.data);
+            // After clearing the cart, you may want to update the cartItems state accordingly
+            setCartItems([]);
+            setIsCartEmpty(true);
+
+            window.location.href = `/user/${userId}`
+
         } catch (error) {
             console.error('Error creating order or clearing cart:', error);
         }
     };
-    
+
 
 
     return (
         <div>
             <h1 className="text-5xl font-bold pt-7 pb-[30px] px-auto w-full text-center">Your Cart</h1>
             <div className=" p-1 sm:p-10 ">
+                {
+                    (isCartEmpty) ?
+                        <div className="flex flex-col items-center">
+                            <p className="flex">
+                                Feels so Empty!
+                            </p>
+                            <img className="flex mt-5 h-10 w-10" src={emptyCart} alt="" />
+                        </div>
+                        :
+
+                        <table className="border-collapse w-full text-left">
+                            <thead className=" border-b-2">
+                                <tr className="">
+                                    <th className="font-normal text-xl text-gray-500  px-4 py-2">Product</th>
+                                    <th className="font-normal text-xl text-gray-500  px-4 py-2">Quantity</th>
+                                    <th className="font-normal text-xl text-gray-500  px-4 py-2">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody className="">
+                                {productDetails.map((item, index) => (
 
 
-                <table className="border-collapse w-full text-left">
-                    <thead className=" border-b-2">
-                        <tr className="">
-                            <th className="font-normal text-xl text-gray-500  px-4 py-2">Product</th>
-                            <th className="font-normal text-xl text-gray-500  px-4 py-2">Quantity</th>
-                            <th className="font-normal text-xl text-gray-500  px-4 py-2">Price</th>
-                        </tr>
-                    </thead>
-                    <tbody className="">
-                        {productDetails.map((item, index) => (
-                            
+                                    <tr className="h-[150px] " key={index}>
+                                        <td className="flex gap-3 md:gap-6 md:px-4 py-2 text-base sm:text-xl font-semibold">
+                                            <img className="max-h-[150px] max-w-[120px] " src={item.image} alt="" />
+                                            <span className="pt-3">{item.name}</span>
 
-                            <tr className="h-[150px] " key={index}>
-                                <td className="flex gap-3 md:gap-6 md:px-4 py-2 text-base sm:text-xl font-semibold">
-                                    <img className="max-h-[150px] max-w-[120px] " src={item.image} alt="" />
-                                    <span className="pt-3">{item.name}</span>
-
-                                </td>
-                                <td className=" text-center px-2 md:px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} /> 
-                                    <a className='underline' onClick={() => removeItem(cartItems[index].itemId)}>Remove</a> 
-                                </td>
-                                <td className=" px-2 md:px-4 py-2">₹ {item.price}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                        </td>
+                                        <td className=" text-center px-2 md:px-4 py-2"><Quantity initialValue={item.quantity} onQuantityChange={(newQuantity) => cartChange(newQuantity, cartItems[index].itemId)} />
+                                            <a className='underline' onClick={() => removeItem(cartItems[index].itemId)}>Remove</a>
+                                        </td>
+                                        <td className=" px-2 md:px-4 py-2">₹ {item.price}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>}
             </div>
-            <hr/>
+            <hr />
             <div className="flex flex-col p-10 justify-end">
                 <p className="flex justify-end p-3 font-semibold text-[20px]">Total: ₹ {totalSum} </p>
-                <button className="flex justify-center p-4 bg-black text-white" type="button" onClick={onClickHandle}>Proceed To Buy</button>
+                <button className={`flex justify-center p-4  ${isCartEmpty ? 'bg-gray-500 cursor-not-allowed' : 'bg-black '}`} type="button" onClick={onClickHandle} disabled={isCartEmpty}>Proceed To Buy</button>
             </div>
         </div>
     )
